@@ -1,0 +1,17 @@
+seed: 0
+data:
+  root: data/acdc
+  patient: patient001        # fixed once, recorded in data/README.md
+  held_out_frame: null       # index of the frame removed for the temporal test (Role 4)
+model:
+  name: siren
+  hidden_features: 256
+  hidden_layers: 3
+  first_omega_0: 30.0
+  hidden_omega_0: 30.0
+  time_encoding: concat      # concat | latent
+training:
+  lr: 1.0e-4
+  batch_size: 65536
+  steps: 5000
+  log_every: 100

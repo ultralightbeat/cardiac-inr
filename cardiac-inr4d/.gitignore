@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+*.egg-info/
+runs/
+lightning_logs/
+# data and models are never committed
+data/*
+!data/README.md
+*.nii
+*.nii.gz
+*.pt
+*.pth
+*.ckpt
+results/*
+!results/.gitkeep
+!results/figures/
+.DS_Store
