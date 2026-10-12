@@ -5,3 +5,5 @@
      latent for an UNSEEN time (interpolate neighbouring codes?) and log the decision
      in docs/DECISIONS.md.
 """
+
+# 时间编码决定网络如何表示完整的心动周期。
