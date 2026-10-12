@@ -7,6 +7,7 @@ reproducible from a config + git commit.
 from dataclasses import dataclass, field
 
 
+# 训练结果同时保存检查点路径和训练历史。
 @dataclass
 class TrainResult:
     checkpoint_path: str

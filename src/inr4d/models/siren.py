@@ -4,6 +4,7 @@ Implement yourselves from the paper: sine layer, first-layer vs hidden-layer
 initialisation, omega_0. Explain WHY the initialisation is what it is.
 """
 
+# 正弦激活有助于网络学习医学图像中的高频细节。
 
 class SIREN:  # TODO(Role 2): make this an nn.Module
     def __init__(self, in_features=4, hidden_features=256, hidden_layers=3,
