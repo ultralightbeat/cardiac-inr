@@ -1,20 +1,34 @@
 # Data
 
-Data is **never committed** (see `.gitignore`).
+Data is **never committed** (ACDC terms of use; see `.gitignore`).
 
-## ACDC (Automated Cardiac Diagnosis Challenge)
+## ACDC (Automated Cardiac Diagnosis Challenge, MICCAI 2017)
 
-1. Register / accept the dataset terms on the official challenge page (search "ACDC cardiac MICCAI 2017 challenge").
-2. Download the training set and unpack it here as `data/acdc/patientXXX/...`.
-3. Each patient folder contains a 4D NIfTI series (`patientXXX_4d.nii.gz`) plus the annotated end-diastole / end-systole frames. Confirm the exact file names on your download.
-4. Set the chosen patient ID in `configs/default.yaml`.
+1. Download the ACDC dataset from the official site (Human Heart Project, CREATIS / University of Lyon;
+   search "ACDC challenge dataset") and accept its terms.
+2. Copy patient folders here, one folder per patient:
+
+```
+data/acdc/patient051/
+    patient051_4d.nii            (or .nii.gz) the 4D cine series [H, W, D, T]
+    patient051_frame01_gt.nii    expert labels at end-diastole  (1 RV, 2 myocardium, 3 LV)
+    patient051_frame11_gt.nii    expert labels at end-systole
+    Info.cfg                     ED / ES frame numbers, group, height, weight
+```
+
+3. Run `python scripts/pipeline.py` (first patient found under `data/`) or pass `--patient`.
+
+## Other data
+
+Any 4D NIfTI file `[H, W, D, T]` can be passed with `--patient path/to/file.nii.gz`. Without labels:
+- the experiments still run (the "heart" PSNR is then computed on the whole image, no crop);
+- the 3D/4D heart step is skipped, because it needs the labels to tell the left and right ventricle
+  apart and to set the blood threshold.
 
 ## Project record
 
-- Dataset: ACDC training set, downloaded according to the challenge terms (exact release
-  version is not available in this checkout).
-- Main patient: `patient001` (see `configs/default.yaml`).
-- Preprocessing: NIfTI values are loaded as `float32`; `CoordinateDataset` min-max
-  normalises intensities to `[-1, 1]` over the complete patient volume and normalises
-  spatial coordinates using voxel spacing from the NIfTI header.
-- No NIfTI files or model checkpoints are committed to git.
+- Main patient of the report: `patient051` (ACDC training set, group MINF, 224 × 256 × 10 slices × 30 frames,
+  1.64 × 1.64 mm pixels, 10 mm slice spacing, ED = frame 1, ES = frame 11).
+- Preprocessing: intensities min-max normalised to [-1, 1] over the whole 4D volume; coordinates from voxel
+  centres in millimetres, centred and divided by half of the largest physical extent; t = 2k/(T-1) - 1,
+  multiplied by the time scale (0.1) inside the model.

@@ -4,16 +4,22 @@ __pycache__/
 .ipynb_checkpoints/
 *.egg-info/
 runs/
-lightning_logs/
-# data and models are never committed
+.DS_Store
+
+# data is never committed (ACDC terms of use)
 data/*
 !data/README.md
 *.nii
 *.nii.gz
+
+# weights: only the final field of each patient is kept (models/<patient>/field.pt, ~0.8 MB)
 *.pt
 *.pth
 *.ckpt
-results/*
-!results/.gitkeep
-!results/figures/
-.DS_Store
+!models/*/field.pt
+
+# quick checks are not results
+results/*/experiments/quick*/
+results/*/final/quick*/
+results/*/quick_SUMMARY.md
+models/*/quick/
