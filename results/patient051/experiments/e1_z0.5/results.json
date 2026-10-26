@@ -1,0 +1,101 @@
+{
+  "patient": "patient051",
+  "shape": [
+    224,
+    256,
+    10,
+    30
+  ],
+  "spacing": [
+    1.6406199932098389,
+    1.6406199932098389,
+    10.0
+  ],
+  "info": {
+    "ED": 1,
+    "ES": 11,
+    "Group": "MINF",
+    "Height": 170.0,
+    "NbFrame": 30,
+    "Weight": 91.0
+  },
+  "crop": [
+    48,
+    152,
+    85,
+    189
+  ],
+  "args": {
+    "patient": "data/acdc/patient051",
+    "exp": [
+      "e1"
+    ],
+    "out": null,
+    "name": "e1_z0.5",
+    "models": [
+      "siren"
+    ],
+    "e2_models": [
+      "siren"
+    ],
+    "encodings": [
+      "raw",
+      "scaled",
+      "periodic"
+    ],
+    "z_scale": 0.5,
+    "time_scale": 0.1,
+    "holdout_frame": null,
+    "frame_stride": 2,
+    "width": 256,
+    "layers": 3,
+    "omega": 30.0,
+    "steps_e1": 3000,
+    "steps_e2": 4000,
+    "batch": 16384,
+    "lr": 0.0001,
+    "pad": 12,
+    "no_crop": false,
+    "threads": null,
+    "seed": 0,
+    "quick": false
+  },
+  "git_commit": "b5b5440",
+  "python": "3.14.7",
+  "torch": "2.14.1+cpu",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "started": "2026-10-26 17:41:23",
+  "e1": {
+    "frame": 0,
+    "train_slices": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      9
+    ],
+    "test_slices": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "train_points": 64896,
+    "methods": {
+      "interpolation": {
+        "psnr": 19.54673983742978,
+        "ssim": 0.3535644664652915,
+        "psnr_heart": 20.00795481313936
+      },
+      "siren": {
+        "psnr": 19.849088657340353,
+        "ssim": 0.3781805375379751,
+        "psnr_heart": 19.870952749673613,
+        "train_psnr": 40.87180153058914,
+        "params": 198657,
+        "seconds": 207.8122148513794
+      }
+    }
+  }
+}

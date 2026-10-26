@@ -22,8 +22,12 @@ MODES = ("none", "raw", "scaled", "periodic")
 
 
 class TimeEncoding(nn.Module):
-    def __init__(self, mode="scaled", scale=0.25, num_frames=30):
+    def __init__(self, mode="scaled", scale=0.25, num_frames=30, z_scale=1.0):
         super().__init__()
+        # z_scale < 1 makes the field change more slowly ACROSS slices (same idea as the time
+        # scale): slices are 10 mm apart, so a sine network with omega_0 = 30 otherwise
+        # oscillates between them and fills unseen positions with high-frequency noise.
+        self.z_scale = float(z_scale)
         if mode not in MODES:
             raise ValueError(f"mode must be one of {MODES}, got {mode!r}")
         self.mode = mode
@@ -36,6 +40,8 @@ class TimeEncoding(nn.Module):
 
     def forward(self, coords):
         xyz, t = coords[:, :3], coords[:, 3:4]
+        if self.z_scale != 1.0:
+            xyz = xyz * xyz.new_tensor([1.0, 1.0, self.z_scale])
         if self.mode == "none":
             return xyz
         if self.mode == "raw":
@@ -49,7 +55,7 @@ class TimeEncoding(nn.Module):
         return torch.cat([xyz, self.scale * torch.sin(phi), self.scale * torch.cos(phi)], dim=-1)
 
     def extra_repr(self):
-        return f"mode={self.mode}, scale={self.scale}, num_frames={self.num_frames}"
+        return f"mode={self.mode}, scale={self.scale}, num_frames={self.num_frames}, z_scale={self.z_scale}"
 
 
 class NeuralField(nn.Module):

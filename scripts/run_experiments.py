@@ -54,6 +54,8 @@ def parse_args():
     p.add_argument("--e2-models", nargs="+", default=["siren"], choices=["siren", "relu"],
                    help="E2 networks (relu = control with the same size)")
     p.add_argument("--encodings", nargs="+", default=["raw", "scaled", "periodic"], help="E2 time encodings")
+    p.add_argument("--z-scale", type=float, default=1.0,
+                   help="multiply the slice coordinate z by this inside the model (E1 and E2); <1 = smoother across slices")
     p.add_argument("--time-scale", type=float, default=0.1, help="t is multiplied by this (best: 0.1, see DECISIONS)")
     p.add_argument("--holdout-frame", type=int, default=None,
                    help="E2: hide only this frame (0-based) instead of every second frame")
@@ -123,7 +125,7 @@ def run_e1(a, vol, norm, crop, heart3d, frame, out):
     preds, hists, fields = {}, {}, {}
     test_grid = norm.grid(rows, cols, test_z, [frame])
     for m in a.models:
-        field = build_field(m, "none", hidden_features=a.width, hidden_layers=a.layers,
+        field = build_field(m, "none", hidden_features=a.width, hidden_layers=a.layers, z_scale=a.z_scale,
                             omega_0=a.omega, seed=a.seed)
         print(f"-- {m}: {count_parameters(field):,} parameters, {len(train_set.coords):,} training points")
         r = train(field, TensorSampler(train_set.coords, train_set.values, a.seed),
@@ -181,7 +183,7 @@ def run_e2(a, vol, norm, crop, heart3d, out):
     preds, hists, fields = {}, {}, {}
     for model, enc in [(m, e) for m in a.e2_models for e in a.encodings]:
         name = f"{model}_{enc}" + (f"_{a.time_scale:g}" if enc in ("scaled", "periodic") else "")
-        field = build_field(model, enc, a.time_scale, T, a.width, a.layers, a.omega, a.seed)
+        field = build_field(model, enc, a.time_scale, T, a.width, a.layers, a.omega, a.seed, z_scale=a.z_scale)
         print(f"-- {name}: {count_parameters(field):,} parameters, {len(train_set.coords):,} training points")
         r = train(field, TensorSampler(train_set.coords, train_set.values, a.seed),
                   make_cfg(a, a.steps_e2), checkpoint_path=os.path.join(out, f"e2_{name}.pt"))

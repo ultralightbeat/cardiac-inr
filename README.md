@@ -56,7 +56,7 @@ vs expert labels), meshes `MYO/LV/RV_{ED,ES}.obj`.
 | SIREN vs linear interpolation, every 4th frame kept | 28.9 vs 29.2 dB; SIREN better in the fast contraction phase |
 | Blend 0.5 SIREN + 0.5 interpolation | 29.65 vs 29.23 dB, better on 18 of 21 hidden frames |
 | Compression vs quality | heart crop: 16× fewer numbers, 28.9 dB · whole scan: 86×, 27.5 dB |
-| Hidden slices 20 mm apart (E1) | no method recovers them (≈ 20 dB for all): through-plane gap too large |
+| Hidden slices 20 mm apart (E1) | raw z: SIREN fills the gap with high-frequency noise. With the slice coordinate scaled by 0.25: 20.09 vs 20.01 dB in the heart, 19.79 vs 19.55 dB in the crop (patient051); patient015 (z scale 0.5): 20.8 vs 20.1 dB in the crop, 20.4 vs 20.7 in the heart. No method truly recovers a 20 mm gap |
 | Ejection fraction from the 4D field | LV 49 % (expert labels 44 %, same threshold on scanner slices 47 %), RV 51 % (53 %) |
 
 ## Individual scripts

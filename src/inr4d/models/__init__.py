@@ -6,12 +6,12 @@ from inr4d.models.temporal import NeuralField, TimeEncoding
 
 
 def build_field(model="siren", time_mode="scaled", time_scale=0.25, num_frames=30,
-                hidden_features=256, hidden_layers=3, omega_0=30.0, seed=0):
+                hidden_features=256, hidden_layers=3, omega_0=30.0, seed=0, z_scale=1.0):
     """Create a NeuralField: time encoding + SIREN or ReLU network."""
     import torch
 
     torch.manual_seed(seed)
-    enc = TimeEncoding(time_mode, time_scale, num_frames)
+    enc = TimeEncoding(time_mode, time_scale, num_frames, z_scale)
     if model == "siren":
         net = SIREN(enc.out_features, hidden_features, hidden_layers, 1, omega_0, omega_0)
     elif model == "relu":

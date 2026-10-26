@@ -42,6 +42,8 @@ SUMMARY_PARTS = [
     ("ReLU control (same settings as the reference)", "stride4_relu/results.md"),
     ("Blend 0.5 SIREN + 0.5 interpolation (reference)", "stride4/blend.md"),
     ("Whole scan without crop (86x compression)", "stride4_fullimage/results.md"),
+    ("E1 hidden slices, slice coordinate scaled by 0.5", "e1_z0.5/results.md"),
+    ("E1 hidden slices, slice coordinate scaled by 0.25 (best)", "e1_z0.25/results.md"),
 ]
 
 

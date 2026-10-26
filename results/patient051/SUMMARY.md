@@ -154,6 +154,34 @@ Crop (0, 224, 0, 256), commit None
 | interpolation | 38.59 | 29.23 | 0.979 | - | - | - |
 | siren_scaled_0.1 | 34.04 | 27.49 | 0.937 | 34.45 | 198,913 | 1381 |
 
+## E1 hidden slices, slice coordinate scaled by 0.5
+
+`experiments/e1_z0.5`: 
+
+
+Crop (48, 152, 85, 189), commit b5b5440
+
+### E1
+
+| method | PSNR (crop) | PSNR (heart) | SSIM | train PSNR | params | time, s |
+|---|---|---|---|---|---|---|
+| interpolation | 19.55 | 20.01 | 0.354 | - | - | - |
+| siren | 19.85 | 19.87 | 0.378 | 40.87 | 198,657 | 208 |
+
+## E1 hidden slices, slice coordinate scaled by 0.25 (best)
+
+`experiments/e1_z0.25`: 
+
+
+Crop (48, 152, 85, 189), commit b5b5440
+
+### E1
+
+| method | PSNR (crop) | PSNR (heart) | SSIM | train PSNR | params | time, s |
+|---|---|---|---|---|---|---|
+| interpolation | 19.55 | 20.01 | 0.354 | - | - | - |
+| siren | 19.79 | 20.09 | 0.362 | 39.74 | 198,657 | 208 |
+
 ## Final field on all data: volumes and ejection fraction
 
 
