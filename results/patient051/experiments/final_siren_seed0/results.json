@@ -1,0 +1,204 @@
+{
+  "patient": "patient051",
+  "shape": [
+    224,
+    256,
+    10,
+    30
+  ],
+  "spacing": [
+    1.6406199932098389,
+    1.6406199932098389,
+    10.0
+  ],
+  "info": {
+    "ED": 1,
+    "ES": 11,
+    "Group": "MINF",
+    "Height": 170.0,
+    "NbFrame": 30,
+    "Weight": 91.0
+  },
+  "crop": [
+    48,
+    152,
+    85,
+    189
+  ],
+  "args": {
+    "patient": "data/acdc/patient051",
+    "exp": [
+      "e2"
+    ],
+    "out": null,
+    "name": "final_siren_seed0",
+    "models": [
+      "siren",
+      "relu"
+    ],
+    "e2_models": [
+      "siren"
+    ],
+    "encodings": [
+      "scaled"
+    ],
+    "z_scale": 1.0,
+    "time_scale": 0.1,
+    "holdout_frame": null,
+    "frame_stride": 4,
+    "fourier_freqs": 64,
+    "fourier_sigma": 10.0,
+    "val_frames": null,
+    "width": 256,
+    "layers": 3,
+    "omega": 30.0,
+    "steps_e1": 3000,
+    "steps_e2": 20000,
+    "batch": 16384,
+    "lr": 0.0001,
+    "pad": 12,
+    "no_crop": false,
+    "threads": null,
+    "seed": 0,
+    "quick": false
+  },
+  "git_commit": "3327ae0",
+  "python": "3.14.7",
+  "torch": "2.14.1+cpu",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "started": "2026-10-27 20:47:52",
+  "threads": 14,
+  "device": "cpu",
+  "protocol": {
+    "normalization": "min-max of the 4D scan to [-1, 1]",
+    "data_range": 2.0,
+    "clip_policy": "none",
+    "ssim": "ssim_2d_mean: per in-plane 2D image, skimage defaults (win_size=7, uniform window, use_sample_covariance=True, K1=0.01, K2=0.03)",
+    "temporal_error": "MSE of frame-to-frame differences inside the heart mask",
+    "vmin": 0.0,
+    "vmax": 255.0,
+    "labels_for_training": false,
+    "labels_for_roi": "crop around the heart and the heart mask for PSNR (heart)",
+    "labels_for_threshold": false,
+    "labels_for_evaluation": true
+  },
+  "e2": {
+    "vmin_vmax_training_frames_only": [
+      0.0,
+      255.0
+    ],
+    "train_frames": [
+      0,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      28,
+      29
+    ],
+    "validation_frames": [],
+    "test_frames": [
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      9,
+      10,
+      11,
+      13,
+      14,
+      15,
+      17,
+      18,
+      19,
+      21,
+      22,
+      23,
+      25,
+      26,
+      27
+    ],
+    "time_scale": 0.1,
+    "frame_stride": 4,
+    "train_points": 973440,
+    "methods": {
+      "interpolation": {
+        "psnr": 33.74215563943618,
+        "ssim": 0.9412029700003186,
+        "ssim_2d_mean": 0.9412029700003186,
+        "crop_voxels": 2271360,
+        "psnr_heart": 29.231383328171084,
+        "heart_voxels": 560049,
+        "temporal_error_heart": 0.0034087076814970857
+      },
+      "siren_scaled_0.1": {
+        "psnr": 32.83112147752394,
+        "ssim": 0.9201834325631055,
+        "ssim_2d_mean": 0.9201834325631055,
+        "crop_voxels": 2271360,
+        "psnr_heart": 28.870818861378304,
+        "heart_voxels": 560049,
+        "params": 198913,
+        "seconds": 1383.7823235988617,
+        "train_psnr": 36.48854704250874,
+        "train_psnr_heart": 34.32917454052593,
+        "smoothed_batch_psnr": 36.4855895584907,
+        "temporal_error_heart": 0.003660510201694263,
+        "compression": 16.31265930331351
+      }
+    },
+    "per_frame": {
+      "interpolation": [
+        31.120053628824632,
+        28.400530231859396,
+        29.656031800278726,
+        27.799906748296117,
+        25.67271590206335,
+        27.345262829748684,
+        28.23883975524028,
+        26.92446984627191,
+        29.36918594841282,
+        30.239979022629036,
+        28.179591158778305,
+        30.535101727224927,
+        30.618801194206018,
+        28.647896994509317,
+        31.23264497365676,
+        33.088813134921175,
+        31.604775287222232,
+        34.020349599474,
+        31.43046604389546,
+        28.629450482575308,
+        30.64145535137142
+      ],
+      "siren_scaled_0.1": [
+        29.91075302270935,
+        28.06724144829782,
+        29.186111107742242,
+        28.08527945467468,
+        26.54352832897185,
+        27.75992629977319,
+        27.919605047960626,
+        26.76882996097264,
+        28.856799616696573,
+        29.523355781736566,
+        27.94045245624822,
+        29.86627462957189,
+        30.13147169954269,
+        28.539547497320154,
+        30.49834190421912,
+        30.935349880227484,
+        29.3925875332084,
+        31.238715045883225,
+        30.518689467326,
+        28.53257823336678,
+        30.133937577020326
+      ]
+    },
+    "best": "siren_scaled_0.1"
+  }
+}

@@ -6,8 +6,10 @@ from inr4d.models.temporal import NeuralField, TimeEncoding
 
 
 def build_field(model="siren", time_mode="scaled", time_scale=0.25, num_frames=30,
-                hidden_features=256, hidden_layers=3, omega_0=30.0, seed=0, z_scale=1.0):
-    """Create a NeuralField: time encoding + SIREN or ReLU network."""
+                hidden_features=256, hidden_layers=3, omega_0=30.0, seed=0, z_scale=1.0,
+                fourier_freqs=64, fourier_sigma=10.0):
+    """Create a NeuralField: time encoding + SIREN, plain ReLU, or ReLU with Fourier features
+    (fourier_freqs random Gaussian frequencies with std fourier_sigma, Tancik et al. 2020)."""
     import torch
 
     torch.manual_seed(seed)
@@ -17,7 +19,8 @@ def build_field(model="siren", time_mode="scaled", time_scale=0.25, num_frames=3
     elif model == "relu":
         net = ReLUMLP(enc.out_features, hidden_features, hidden_layers, 1)
     elif model == "fourier":
-        net = FourierMLP(enc.out_features, hidden_features, hidden_layers, 1, num_frequencies=128)
+        net = FourierMLP(enc.out_features, hidden_features, hidden_layers, 1, num_frequencies=fourier_freqs,
+                         sigma=fourier_sigma, seed=seed)
     else:
         raise ValueError(f"unknown model {model!r}")
     return NeuralField(enc, net)

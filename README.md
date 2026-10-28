@@ -27,7 +27,7 @@ python scripts/pipeline.py --preset quick                 # 5-minute check that 
 python scripts/pipeline.py --preset full                  # settings of the report, ~3 h
 ```
 
-No GPU is needed. With a CUDA build of PyTorch the same code runs faster with the same results.
+No GPU is needed. With a CUDA build of PyTorch (`--device auto`, the default) the same code runs much faster.
 
 ## What the pipeline does
 
@@ -47,17 +47,43 @@ Final outputs per patient (`results/<patient>/final/heart4d/`):
 `planes_4d.gif` (scanner slices vs neural field), `volume_curve.png`, `summary.md` (EDV, ESV, EF
 vs expert labels), meshes `MYO/LV/RV_{ED,ES}.obj`.
 
-## Main results (patient051, see [`results/patient051/SUMMARY.md`](results/patient051/SUMMARY.md))
+## Main results
+
+Patient 051 (development patient; see [`results/patient051/SUMMARY.md`](results/patient051/SUMMARY.md) and
+[`results/patient051/validation/VALIDITY.md`](results/patient051/validation/VALIDITY.md)):
 
 | Finding | Numbers (heart-region PSNR on hidden data) |
 |---|---|
 | SIREN vs ReLU MLP of the same size (199k parameters) | 28.9 vs 22.3 dB (+6.6 dB) |
-| Time encoding matters | raw `t` 23.5 dB → `t·0.25` 31.7 dB (every 2nd frame hidden); best scale 0.1 |
+| SIREN vs ReLU + Fourier features (σ chosen on validation frames) | 28.9 vs 26.6 dB (+2.3 dB) |
+| SIREN, 3 seeds | 28.91 ± 0.04 dB |
+| Time encoding matters | raw `t` 22.7 dB → scaled `t` 29.3 dB; scale 0.1 chosen on separate validation frames |
 | SIREN vs linear interpolation, every 4th frame kept | 28.9 vs 29.2 dB; SIREN better in the fast contraction phase |
-| Blend 0.5 SIREN + 0.5 interpolation | 29.65 vs 29.23 dB, better on 18 of 21 hidden frames |
+| Blend 0.5 SIREN + 0.5 interpolation (weight fixed in advance) | 29.65 vs 29.23 dB, better on 18 of 21 hidden frames |
 | Compression vs quality | heart crop: 16× fewer numbers, 28.9 dB · whole scan: 86×, 27.5 dB |
-| Hidden slices 20 mm apart (E1) | raw z: SIREN fills the gap with high-frequency noise. With the slice coordinate scaled by 0.25: 20.09 vs 20.01 dB in the heart, 19.79 vs 19.55 dB in the crop (patient051); patient015 (z scale 0.5): 20.8 vs 20.1 dB in the crop, 20.4 vs 20.7 in the heart. No method truly recovers a 20 mm gap |
-| Ejection fraction from the 4D field | LV 49 % (expert labels 44 %, same threshold on scanner slices 47 %), RV 51 % (53 %) |
+| Hidden slices 20 mm apart (E1) | all methods ≈ 20 dB; with z scaled by 0.25 the SIREN noise disappears (20.09 vs 20.01 dB) |
+| Ejection fraction (ED/ES frames from Info.cfg) | LV 42.7 % (expert labels 43.6 %); LV Dice 0.897 at ED; RV not reliable with a threshold |
+
+14 held-out patients (settings fixed on patient 051; see [`results/multi_patient/MULTI_PATIENT.md`](results/multi_patient/MULTI_PATIENT.md)):
+
+| Comparison (paired over patients) | Result |
+|---|---|
+| Blend − interpolation | +0.37 dB (95 % CI 0.26–0.48), better on 14 of 14, Wilcoxon p = 0.0001 |
+| SIREN − ReLU | +7.4 dB, better on 14 of 14, p = 0.0001 |
+| SIREN − interpolation | −0.57 dB, behind on 13 of 14 |
+| LV geometry | Dice 0.87 at ED (same as the threshold on the scanner data), EF error 4.6 points on average |
+
+## Validity checks
+
+```bash
+python scripts/run_validity.py            # patient 051: validation sweep, 3 seeds, Fourier-ReLU, geometry (~3-4 h CPU)
+python scripts/validate_geometry.py       # Dice / HD95 / ASSD, EF errors, threshold / grid / smoothing sensitivity
+python scripts/run_patients.py --device cuda   # 14 held-out patients (GPU recommended, e.g. Colab: notebooks/02_colab_gpu.ipynb)
+```
+
+Protocol: settings chosen on validation frames (12, 20) removed from training; exact train PSNR over all
+training voxels; temporal error; normalisation checked (training-frame min/max identical to the scan);
+the network never sees labels, the 3D step is label-assisted and says so.
 
 ## Individual scripts
 
@@ -65,6 +91,7 @@ vs expert labels), meshes `MYO/LV/RV_{ED,ES}.obj`.
 python scripts/run_experiments.py --help     # E1 / E2 with every option (encodings, stride, width, steps ...)
 python scripts/evaluate_blend.py <run dir>   # blend re-evaluation of a finished E2 run
 python scripts/render_4d.py --train          # final field + 3D/4D heart; without --train re-renders models/<patient>/field.pt
+python scripts/run_experiments.py --device cuda   # any script: --device cpu / cuda / xpu / auto
 pytest -q                                    # tests
 ```
 

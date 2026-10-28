@@ -23,3 +23,11 @@ results/*/experiments/quick*/
 results/*/final/quick*/
 results/*/quick_SUMMARY.md
 models/*/quick/
+
+# the dataset archive for the course submission (too large for git)
+submission/*.zip
+submission/dataset_tmp/
+
+# validity smoke test
+results/*/quick_validation/
+results/quick_multi_patient/

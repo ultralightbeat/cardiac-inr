@@ -4,14 +4,19 @@ Pipeline (no network inside this module; it works on any dense volume, e.g. the
 neural field queried on a fine grid, or the scanner stack interpolated):
 
   1. Blood threshold. In cine-MRI (bSSFP) blood is bright and the heart muscle is
-     dark. The threshold is the midpoint between the mean intensity of the
-     expert-labelled LV cavity and of the myocardium at end-diastole.
+     dark. The threshold is the midpoint between the MEDIAN intensity of the
+     expert-labelled LV cavity and of the myocardium at end-diastole (labels used).
   2. Region of interest per chamber: the expert label of that chamber (union of
-     ED and ES), dilated in-plane, so neighbouring bright structures are excluded.
-     Between two scanned slices the ROI is the union of both neighbours.
+     ED and ES), dilated in-plane, so neighbouring bright structures are excluded (labels used).
+     Between two scanned slices the ROI is shape-interpolated (roi_interp).
   3. Per time point: voxels brighter than the threshold inside the ROI, largest
      connected 3D component -> chamber mask -> volume in ml.
   4. Marching cubes on the slightly smoothed mask -> triangle mesh in millimetres.
+     Volumes are always counted on the binary mask (step 3), never on the smoothed mesh;
+     smoothing only changes the picture (checked in scripts/validate_geometry.py).
+
+Label use: the network is trained on intensities only; this module is label-assisted
+(threshold, ROIs, wall region). Expert labels are also the reference for evaluation.
 
 Validation: the same procedure on the scanner data gives volumes that can be
 compared with the volumes of the expert labels (end-diastolic / end-systolic volume
@@ -109,7 +114,11 @@ def roi_interp(roi, z_positions, empty=15.0):
     the signed distance to the mask boundary is interpolated linearly between slices, so the
     region changes smoothly from one scanned slice to the next (no steps every 10 mm).
     Slices without the structure count as 'far outside' (distance `empty` px), so the region
-    tapers off towards the apex instead of ending with a flat cut."""
+    tapers off towards the apex instead of ending with a flat cut.
+    Units: in-plane distances are in pixels. The ACDC pixels are square (sx = sy), so pixels are
+    millimetres times one constant and the interpolated boundary (zero level) is the same as with
+    millimetres; only `empty` depends on the unit (15 px = 24.6 mm at 1.64 mm pixels). Along z the
+    weight is the fractional slice position, i.e. linear in millimetres between slice centres."""
     from scipy import ndimage
 
     D = roi.shape[2]
@@ -198,6 +207,15 @@ def save_obj(path, verts, faces):
             f.write(f"v {v[0]:.2f} {v[1]:.2f} {v[2]:.2f}\n")
         for t in faces + 1:
             f.write(f"f {t[0]} {t[1]} {t[2]}\n")
+
+
+def mesh_volume(verts, faces):
+    """Enclosed volume of a closed triangle mesh (divergence theorem), in the units of verts cubed."""
+    if len(faces) == 0:
+        return 0.0
+    v = np.asarray(verts, np.float64)
+    a, b, c = v[faces[:, 0]], v[faces[:, 1]], v[faces[:, 2]]
+    return float(abs(np.einsum("ij,ij->i", a, np.cross(b, c)).sum()) / 6.0)
 
 
 def ejection_fraction(volumes):

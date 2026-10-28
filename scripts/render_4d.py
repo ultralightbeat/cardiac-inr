@@ -63,6 +63,7 @@ def parse_args():
     p.add_argument("--pad", type=int, default=12)
     p.add_argument("--frames", type=int, default=30, help="time points to render over the cycle")
     p.add_argument("--threads", type=int, default=None)
+    p.add_argument("--device", default="auto", help="cpu / cuda / xpu / auto (GPU if there is one)")
     return p.parse_args()
 
 
@@ -94,7 +95,7 @@ def get_field(a, vol, norm, crop, out):
     import torch
 
     from inr4d.models import build_field, count_parameters
-    from inr4d.training.trainer import TensorSampler, TrainConfig, train
+    from inr4d.training.trainer import TensorSampler, TrainConfig, resolve_device, train
 
     if a.threads:
         torch.set_num_threads(a.threads)
@@ -115,13 +116,15 @@ def get_field(a, vol, norm, crop, out):
     if a.checkpoint:
         state = torch.load(a.checkpoint, map_location="cpu", weights_only=False)
         field.load_state_dict(state["state_dict"])
+        field.to(resolve_device(getattr(a, "device", "auto")))
         print(f"loaded {a.checkpoint} ({count_parameters(field):,} parameters, time scale {a.time_scale})")
         return field, None
     data = S.select(vol, norm, crop)
     print(f"training the final field on all {T} frames and all slices: {len(data.coords):,} points, "
           f"{count_parameters(field):,} parameters, {a.steps} steps")
     cfg = TrainConfig(steps=a.steps, batch_size=a.batch, lr=a.lr, lr_final=a.lr / 10,
-                      log_every=max(a.steps // 20, 1), seed=a.seed, threads=a.threads)
+                      log_every=max(a.steps // 20, 1), seed=a.seed, threads=a.threads,
+                      device=getattr(a, "device", "auto"))
     path = os.path.join(out, "field.pt")
     r = train(field, TensorSampler(data.coords, data.values, a.seed), cfg, checkpoint_path=path)
     with open(os.path.join(out, "field.json"), "w", encoding="utf-8") as f:

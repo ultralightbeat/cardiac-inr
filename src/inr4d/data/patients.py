@@ -54,7 +54,7 @@ def resolve_patient(arg: str | None, root: str = "data") -> str:
 
 
 def results_dir(patient: str, run: str) -> str:
-    return os.path.join("results", patient_name(patient), run)
+    return os.path.normpath(os.path.join("results", patient_name(patient), run))
 
 
 def model_dir(patient: str) -> str:

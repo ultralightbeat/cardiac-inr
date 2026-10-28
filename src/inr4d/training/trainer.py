@@ -24,6 +24,7 @@ class TrainConfig:
     log_every: int = 100
     seed: int = 0
     threads: int | None = None    # torch CPU threads; None = torch default
+    device: str = "cpu"           # "cpu", "cuda", "xpu" or "auto" (see resolve_device)
 
 
 @dataclass
@@ -31,6 +32,18 @@ class TrainResult:
     checkpoint_path: str | None
     history: dict = field(default_factory=dict)
     seconds: float = 0.0
+
+
+def resolve_device(name="auto") -> str:
+    """'auto' -> 'cuda' (NVIDIA, e.g. Colab T4) if available, else 'xpu' (Intel GPU) if available,
+    else 'cpu'. Any other value is returned unchanged."""
+    if name != "auto":
+        return name
+    if torch.cuda.is_available():
+        return "cuda"
+    if hasattr(torch, "xpu") and torch.xpu.is_available():
+        return "xpu"
+    return "cpu"
 
 
 class TensorSampler:
@@ -55,6 +68,8 @@ def train(model, data, cfg: TrainConfig, checkpoint_path=None, eval_fn=None,
     if cfg.threads:
         torch.set_num_threads(int(cfg.threads))
     torch.manual_seed(cfg.seed)
+    device = resolve_device(cfg.device)
+    model.to(device)
     opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)
     hist = {"step": [], "loss": [], "train_psnr": [], "eval": []}
     t0 = time.time()
@@ -66,6 +81,7 @@ def train(model, data, cfg: TrainConfig, checkpoint_path=None, eval_fn=None,
         for g in opt.param_groups:
             g["lr"] = lr
         x, y = data.sample(cfg.batch_size)
+        x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
         loss = torch.mean((model(x) - y) ** 2)
         opt.zero_grad(set_to_none=True)
         loss.backward()
@@ -85,5 +101,6 @@ def train(model, data, cfg: TrainConfig, checkpoint_path=None, eval_fn=None,
             hist["eval"].append({"step": step, **eval_fn(model)})
     seconds = time.time() - t0
     if checkpoint_path:
-        torch.save({"state_dict": model.state_dict(), "history": hist}, checkpoint_path)
+        state = {k: v.detach().cpu() for k, v in model.state_dict().items()}   # loads anywhere
+        torch.save({"state_dict": state, "history": hist, "device": device}, checkpoint_path)
     return TrainResult(checkpoint_path, hist, seconds)

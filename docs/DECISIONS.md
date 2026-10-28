@@ -93,3 +93,42 @@ Result (heart-region / crop PSNR on hidden slices): patient051: raw 19.95 / 19.7
 0.25 20.09 / 19.79; interpolation 20.01 / 19.55. patient015: 0.5 20.42 / 20.84, 0.25 20.13 / 20.45,
 0.1 20.03 / 20.25; interpolation 20.68 / 20.06. The noise disappears and SIREN is level with interpolation
 (slightly better on patient051). A 20 mm gap is a limit of the data: the heart changes shape over that distance.
+
+## D-012: Separate validation frames and a stronger baseline
+Date: 2026-10-27 | Author: team
+Context: the time scale had been explored on the hidden test frames; plain ReLU is a weak control.
+Decision: frames 12 and 20 are removed from training and used only to choose settings (scripts/run_validity.py);
+add ReLU + Fourier features (64 frequencies, sigma chosen on validation); repeat SIREN with 3 seeds; store exact
+train PSNR, temporal error and normalisation metadata in every run.
+Result: validation picks the same time scale 0.1 (24.0 dB vs 23.7 for 0.05 and 20.7 for 0.25). SIREN 3 seeds:
+28.91 ± 0.04 dB; Fourier-ReLU 26.63 dB; ReLU 22.28; interpolation 29.23. Normalisation: training-frame min/max
+identical to the whole scan (0, 255), so no leakage.
+
+## D-013: 14 held-out patients with settings fixed in advance
+Date: 2026-10-28 | Author: team
+Context: one development patient does not show generalisation.
+Decision: run the fixed protocol (SIREN t × 0.1, 20,000 steps, blend 0.5) on 14 ACDC patients from three groups
+(016-020 DCM, 022/025/030/035/040 HCM, 041/045/048/050 MINF) on a GPU (scripts/run_patients.py); patients are the
+unit of analysis (95 % t-interval, paired Wilcoxon test).
+Result: blend better than interpolation on 14/14 (+0.37 dB, p = 0.0001); SIREN better than ReLU on 14/14 (+7.4 dB);
+SIREN alone behind interpolation on 13/14 (−0.57 dB).
+
+## D-014: Ejection fraction at the ED / ES frames of Info.cfg
+Date: 2026-10-27 | Author: team
+Context: EF was taken from the maximum and minimum of the volume curve.
+Decision: use the ED / ES frames given with the scan, the clinical standard; report Dice, HD95, ASSD against the
+expert labels and the same threshold on the scanner data as reference (scripts/validate_geometry.py).
+Result: patient 051 LV EF 42.7 % (labels 43.6 %, previously 49 % with curve extremes); LV Dice 0.897 at ED
+(scanner 0.891). 14 patients: LV Dice 0.87, mean absolute EF error 4.6 points. The right ventricle at ES is not
+segmented reliably by a threshold (Dice 0.66 on patient 051): reported as a limitation. Sensitivity: threshold
+±0.05 changes LV EF 40.6-44.6 %; grid density and display smoothing do not change the volumes (< 1.2 %).
+
+## D-015: Beyond linear interpolation (exploratory, not in the main results)
+Date: 2026-10-28 | Author: team
+Context: can a model beat interpolation on its own?
+Result (patient 051, every 4th frame kept): cubic spline 28.54, PCHIP 29.17, Akima 29.05 dB, all below linear
+29.23; TV-L1 optical-flow interpolation 29.49 (29.78 blended with linear). A motion-based field (SIREN template
++ displacement + residual, also guided by optical flow) reached 22.9 dB on validation vs SIREN 24.0 and
+interpolation 24.5, so it was dropped. Direction for future work: motion-aware fields and priors learned
+across patients.
+
