@@ -29,6 +29,30 @@ python scripts/pipeline.py --preset full                  # settings of the repo
 
 No GPU is needed. With a CUDA build of PyTorch (`--device auto`, the default) the same code runs much faster.
 
+## For the instructor: run on a Mac (Apple Silicon) in 4 steps
+
+Needs Python 3.10–3.13 (`python3 --version`; if older: install from python.org or `brew install python@3.12`) and ~2 GB of disk.
+No GPU is needed: on Apple Silicon the code runs on the CPU (results are identical, the device only changes the speed).
+
+```bash
+# 1. code
+git clone -b feat/experiments-3d https://github.com/ultralightbeat/cardiac-inr.git
+cd cardiac-inr
+# 2. data: unzip Group4_Dataset_ACDC_16patients.zip (link in the submission e-mail) INTO this folder,
+#    so that the files end up in data/acdc/patient051/patient051_4d.nii etc.
+unzip ~/Downloads/Group4_Dataset_ACDC_16patients.zip -d .
+# 3. setup (creates .venv, installs everything, runs the tests)
+bash setup.sh
+# 4. run
+source .venv/bin/activate
+python scripts/pipeline.py --patient data/acdc/patient051 --preset quick   # ~5 min check that everything works
+python scripts/pipeline.py --patient data/acdc/patient051                  # the main study, ~1 h on a laptop CPU
+```
+
+Results: `results/patient051/SUMMARY.md` (all tables) and `results/patient051/final/heart4d/heart_4d.html`
+(interactive beating heart, open in a browser). The same patients can also be taken from the official ACDC
+download (`.nii.gz` files work unchanged): copy the folders `patient015`–`patient051` into `data/acdc/`.
+
 ## What the pipeline does
 
 | Step | Question | Output folder |
