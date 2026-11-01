@@ -1,7 +1,7 @@
 # cardiac-inr4d — Neural Fields for Continuous Cardiac Cine-MRI
 
 A SIREN neural network learns one cardiac cine-MRI scan as a continuous function of `(x, y, z, t)`
-and reconstructs a beating 3D heart from it. Course project, Beihang University, Group 4.
+and reconstructs a beating 3D heart from it. Course project, Beihang University, Group 4.  
 
 ## 1. Install Python
 
