@@ -1,12 +1,10 @@
-numpy
-torch
-nibabel
-scikit-image
-matplotlib
-imageio
-tqdm
-pyyaml
-tensorboard
-pytest
-ruff
-jupyter
+# runtime (CPU is enough; a CUDA build of torch also works, nothing else changes)
+numpy>=1.24
+scipy>=1.10
+torch>=2.0
+nibabel>=5.0
+scikit-image>=0.21
+matplotlib>=3.7
+pillow>=9.5
+# tests
+pytest>=7.0

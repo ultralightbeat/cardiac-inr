@@ -1,0 +1,10 @@
+{
+  "width": 256,
+  "layers": 3,
+  "omega": 30.0,
+  "time_scale": 0.1,
+  "steps": 20000,
+  "params": 198913,
+  "seconds": 1540.0291693210602,
+  "train_psnr": 35.27456345365442
+}
