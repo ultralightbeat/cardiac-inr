@@ -18,8 +18,13 @@ cd cardiac-inr
 or on GitHub: **Code → Download ZIP** and unzip.
 
 ## 3. Download the dataset
+**Option A (recommended): the 16 ACDC patients used in our report** — If you want to use the complete patient data, you can directly utilize the automatic download script we previously wrote. In the terminal (command line), input:
 
-**Option A (recommended): the 16 ACDC patients used in our report** — `Group4_Dataset_ACDC_16patients.zip`
+```bash
+.venv\Scripts\python scripts\download_data.py
+```
+
+**Option B : the 16 ACDC patients used in our report** — `Group4_Dataset_ACDC_16patients.zip`
 (private link in the submission e-mail). Unzip it **into the project folder**, so that the files end up in
 `data/acdc/patient051/patient051_4d.nii` etc.:
 
@@ -27,7 +32,7 @@ or on GitHub: **Code → Download ZIP** and unzip.
 unzip ~/Downloads/Group4_Dataset_ACDC_16patients.zip -d .
 ```
 
-**Option B: the full ACDC dataset** (150 patients), e.g. on Kaggle:
+**Option C: the full ACDC dataset** (150 patients), e.g. on Kaggle:
 <https://www.kaggle.com/datasets/samdazel/automated-cardiac-diagnosis-challenge-miccai17>.
 Inside there is one folder per patient, `patient001` … `patient150`; `.nii.gz` files work unchanged.
 
