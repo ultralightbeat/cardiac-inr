@@ -96,13 +96,8 @@ The trained model is saved to `models/patient051/field.pt`.
 
 Details: `results/patient051/SUMMARY.md`, `results/multi_patient/MULTI_PATIENT.md`.
 
-## More scripts
-
-```bash
-python scripts/run_experiments.py --help     # single experiments with every option
-python scripts/run_patients.py               # the 14 held-out patients of the report
-python scripts/render_4d.py --train          # final field + 3D/4D heart
-pytest -q                                    # tests
+download the data from the web
+do not upload to github
 ```
 Every script accepts `--device auto|cpu|cuda|xpu`.
 
