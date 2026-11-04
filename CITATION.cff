@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software or build on this work, please cite it as below."
+title: "cardiac-inr: Neural Fields for Continuous Cardiac Cine-MRI"
+type: software
+authors:
+  - family-names: Bezborodnikov
+    given-names: Danil
+    affiliation: Beihang University
+  - family-names: Kuzmichenko
+    given-names: Nikolai
+    affiliation: Beihang University
+  - family-names: Du
+    given-names: Yi
+    affiliation: Beihang University
+  - family-names: Yan
+    given-names: Qingyun
+    affiliation: Beihang University
+  - family-names: Liu
+    given-names: Jianxiang
+    affiliation: Beihang University
+repository-code: "https://github.com/ultralightbeat/cardiac-inr"
+abstract: >-
+  A per-patient sine-activated neural field (SIREN) that represents a cardiac
+  cine-MRI scan as one continuous function of position and time, evaluated on
+  hidden frames and slices of the public ACDC dataset, with a 4D heart model
+  and an ejection-fraction check.
+keywords:
+  - neural fields
+  - implicit neural representation
+  - SIREN
+  - cardiac MRI
+  - cine-MRI
+version: 1.0.0
+date-released: "2026-11-02"
