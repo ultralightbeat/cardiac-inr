@@ -1,0 +1,14 @@
+Copyright (c) 2026 Danil Bezborodnikov, Nikolai Kuzmichenko, Yi Du, Qingyun Yan, Jianxiang Liu
+(Beihang University, course project "Neural Fields for Continuous Cardiac Cine-MRI").
+
+All rights reserved.
+
+The source code, documentation, figures and results in this repository may be viewed for
+the purpose of evaluating the project. No permission is granted to use, copy, modify, merge,
+publish, distribute, sublicense or sell any part of it, or to use it in other research or
+publications, without prior written permission from the authors.
+
+To cite this work, use the metadata in CITATION.cff.
+
+The ACDC dataset is NOT part of this repository and is subject to its own terms of use
+(Bernard et al., IEEE Transactions on Medical Imaging, 2018).
